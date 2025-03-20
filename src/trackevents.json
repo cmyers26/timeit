@@ -1,0 +1,19 @@
+[
+    {"event": "100m", "distance_meters": 100},
+    {"event": "200m", "distance_meters": 200},
+    {"event": "400m", "distance_meters": 400},
+    {"event": "800m", "distance_meters": 800},
+    {"event": "1000m", "distance_meters": 1000},
+    {"event": "1500m", "distance_meters": 1500},
+    {"event": "1600m", "distance_meters": 1600},
+    {"event": "Mile", "distance_meters": 1609},
+    {"event": "3000m", "distance_meters": 3000},
+    {"event": "3200m", "distance_meters": 3200},
+    {"event": "2Mile", "distance_meters": 3218},
+    {"event": "5000m", "distance_meters": 5000},
+    {"event": "10000m", "distance_meters": 10000},
+    {"event": "3000m Steeplechase", "distance_meters": 3000},
+    {"event": "10 Miles", "distance_meters": 16093},
+    {"event": "Half Marathon", "distance_meters": 21097},
+    {"event": "Marathon", "distance_meters": 42195}
+]
