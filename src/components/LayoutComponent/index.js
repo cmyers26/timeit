@@ -1,21 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AppBar, Toolbar, Typography, Box, CssBaseline } from "@mui/material";
 
 const Layout = ({ children }) => {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <Box>
       <CssBaseline />
 
       {/* AppBar */}
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} style={{ backgroundColor: "#aa2e25"}}>
         <Toolbar
-          style={{ diplay: "flex", justifyContent: "center" }}
+          style={{ diplay: "flex", justifyContent: "center", flexDirection: "column" }}
         >
           <Typography
             variant="h6"
             noWrap
           >
-            Track and Cross Country Time Split Calculator
+            Split It! Track and Cross Country Time Split Calculator
           </Typography>
         </Toolbar>
       </AppBar>
@@ -31,22 +39,21 @@ const Layout = ({ children }) => {
             alignItems: "center",
             border: "1px solid lightgrey",
             padding: "5px",
+            backgroundColor: "lightgrey",
           }}>
             <p>Add Space Top</p>
           </div>
           <div style={{
-            display: "grid",
-            gridTemplateColumns: "150px 1fr 150px",
-            gridTemplateRows: "auto",
-            gap: "10px",
             height: "100vh",
             margin: "0 20px",
+            ...(width < 768 ? { display: "flex", flexDirection: "column", } : { display: "grid", gridTemplateColumns: "150px 1fr 150px", gridTemplateRows: "auto", gap: "10px",}),
           }}>
             <div style={{
               border: "1px solid lightgrey",
               padding: "5px",
               display: "flex",
               justifyContent: "center",
+              backgroundColor: "lightgrey",
             }}>
               <p>Add Space</p>
             </div>
@@ -58,6 +65,7 @@ const Layout = ({ children }) => {
               padding: "5px",
               display: "flex",
               justifyContent: "center",
+              backgroundColor: "lightgrey",
             }}>
               <p>Add Space</p>
             </div>
