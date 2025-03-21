@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AppBar, Toolbar, Typography, Box, CssBaseline } from "@mui/material";
+import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
 
 const Layout = ({ children }) => {
   const [width, setWidth] = useState(window.innerWidth);
@@ -20,16 +21,26 @@ const Layout = ({ children }) => {
           style={{ diplay: "flex", justifyContent: "center", flexDirection: "column" }}
         >
           <Typography
-            variant="h6"
-            noWrap
+            variant={width < 768 ? "p" : "h6"}
+            style={{
+              display: "flex",
+              height: "auto",
+              padding: "15px 0",
+              ...(width < 768 ? { flexDirection: "column", alignItems: "center", textAlign: "center" } : { flexDirection: "row", alignItems: "center", textAlign: "center" }),
+            }}
           >
-            Split It! Track and Cross Country Time Split Calculator
+            <span style={{ display: "flex"}}>
+              SPLIT IT! <TimerOutlinedIcon style={{
+                ...(width < 768 ? { margin: "0 5px" } : { margin: "3px 5px" }),
+              }} />
+            </span>
+            Track and Cross Country Time Split Calculator
           </Typography>
         </Toolbar>
       </AppBar>
 
       {/* Main Content */}
-      <Box component="main" style={{marginBottom: "100px"}}>
+      <Box component="main" style={{marginBottom: "100px", marginTop: "40px"}}>
         <Toolbar />
           <div style={{
             margin: "20px",
