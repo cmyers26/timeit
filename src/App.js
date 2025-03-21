@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Layout from "./components/LayoutComponent";
-import CalculatorApp from './components/AppComponent';
+import MainApp from './components/MainApp';
 
 const App = () => {
   
   return (
     <Layout>
-      <CalculatorApp />
+      <MainApp />
     </Layout>
   );
 };
