@@ -43,7 +43,7 @@ const Layout = ({ children }) => {
       <Box component="main" style={{marginBottom: "100px", marginTop: "40px"}}>
         <Toolbar />
           <div style={{
-            margin: "20px",
+            margin: "10px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -56,7 +56,7 @@ const Layout = ({ children }) => {
           </div>
           <div style={{
             height: "100vh",
-            margin: "0 20px",
+            margin: "0 10px",
             ...(width < 768 ? { display: "flex", flexDirection: "column", } : { display: "grid", gridTemplateColumns: "150px 1fr 150px", gridTemplateRows: "auto", gap: "10px",}),
           }}>
             <div style={{
