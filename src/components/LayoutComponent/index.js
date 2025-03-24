@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AppBar, Toolbar, Typography, Box, CssBaseline } from "@mui/material";
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
+import SplitItLogo from "../../assets/logoComponent";
 
 const Layout = ({ children }) => {
   const [width, setWidth] = useState(window.innerWidth);
@@ -25,24 +26,30 @@ const Layout = ({ children }) => {
             style={{
               display: "flex",
               height: "auto",
-              padding: "15px 0",
+              padding: "10px 0",
+              fontStyle: "italic",
               ...(width < 768 ? { flexDirection: "column", alignItems: "center", textAlign: "center" } : { flexDirection: "row", alignItems: "center", textAlign: "center" }),
             }}
           >
             <span style={{ display: "flex"}}>
-              SPLIT IT! <TimerOutlinedIcon style={{
-                ...(width < 768 ? { margin: "0 5px" } : { margin: "3px 5px" }),
-              }} />
+              <SplitItLogo
+                fillColor="white"
+                width={width < 768 ? "60" : "80"}
+                height={width < 768 ? "60" : "80"}
+                style={{
+                  ...(width < 768 ? { margin: "0 5px" } : { margin: "3px 5px" }),
+                }}  
+              />
             </span>
-            Track and Cross Country Time Split Calculator
+            Free Stopwatch & Split Calculator
           </Typography>
         </Toolbar>
       </AppBar>
 
       {/* Main Content */}
-      <Box component="main" style={{marginBottom: "100px", marginTop: "40px"}}>
+      <Box component="main" style={{marginBottom: "100px", marginTop: width < 768 ? "80px" : "60px"}}>
         <Toolbar />
-          <div style={{
+          {/* <div style={{
             margin: "10px",
             display: "flex",
             flexDirection: "column",
@@ -53,13 +60,14 @@ const Layout = ({ children }) => {
             backgroundColor: "lightgrey",
           }}>
             <p>Add Space Top</p>
-          </div>
+          </div> */}
           <div style={{
             height: "100vh",
             margin: "0 10px",
-            ...(width < 768 ? { display: "flex", flexDirection: "column", } : { display: "grid", gridTemplateColumns: "150px 1fr 150px", gridTemplateRows: "auto", gap: "10px",}),
+            display: "flex", flexDirection: "column",
+            // ...(width < 768 ? { display: "flex", flexDirection: "column", } : { display: "grid", gridTemplateColumns: "150px 1fr 150px", gridTemplateRows: "auto", gap: "10px",}),
           }}>
-            <div style={{
+            {/* <div style={{
               border: "1px solid lightgrey",
               padding: "5px",
               display: "flex",
@@ -67,11 +75,11 @@ const Layout = ({ children }) => {
               backgroundColor: "lightgrey",
             }}>
               <p>Add Space</p>
-            </div>
+            </div> */}
             <div>
               {children}
             </div>
-            <div style={{
+            {/* <div style={{
               border: "1px solid lightgrey",
               padding: "5px",
               display: "flex",
@@ -79,7 +87,7 @@ const Layout = ({ children }) => {
               backgroundColor: "lightgrey",
             }}>
               <p>Add Space</p>
-            </div>
+            </div> */}
           </div>
       </Box>
     </Box>
