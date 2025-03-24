@@ -56,7 +56,7 @@ const CalculatorApp = () => {
     <div style={{ padding: '20px' }}>
       {/* Race Distance Dropdown */}
       <FormControl fullWidth style={{ marginBottom: '20px' }}>
-        <InputLabel>Race Distance</InputLabel>
+        <InputLabel>Select a Race Distance</InputLabel>
         <Select
           value={raceDistance}
           onChange={(e) => setRaceDistance(e.target.value)}
