@@ -1,13 +1,17 @@
 import React from 'react';
 import Layout from "./components/LayoutComponent";
 import MainApp from './components/MainApp';
+import InstallPWA from './components/InstallPwa';
 
 const App = () => {
   
   return (
-    <Layout>
-      <MainApp />
-    </Layout>
+    <>
+      <InstallPWA />
+      <Layout>
+        <MainApp />
+      </Layout>
+    </>
   );
 };
 
