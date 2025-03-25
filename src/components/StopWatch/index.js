@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Typography, List, ListItem, TextField, Paper, IconButton, useMediaQuery } from "@mui/material";
+import { Box, Button, Typography, List, ListItem, TextField, Paper, IconButton, useMediaQuery, Checkbox, FormControlLabel } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const Stopwatch = () => {
@@ -10,6 +10,7 @@ const Stopwatch = () => {
   const [singleRunnerSplits, setSingleRunnerSplits] = useState([]);
   const [lastSplitTime, setLastSplitTime] = useState(0);
   const [raceName, setRaceName] = useState("");
+  const [isRelayRace, setIsRelayRace] = useState(false);
 
   const isMobile = useMediaQuery("(max-width:600px)");
 
@@ -55,13 +56,31 @@ const Stopwatch = () => {
   };
 
   const stopRunnerTimer = (runnerId) => {
-    setRunners((prevRunners) =>
-      prevRunners.map((runner) =>
+    setRunners((prevRunners) => {
+      const updatedRunners = prevRunners.map((runner) =>
         runner.id === runnerId && !runner.stopped
           ? { ...runner, stopped: true, totalTime: time }
           : runner
-      )
-    );
+      );
+
+      // Automatically start next runner's time if it's a relay race
+      if (isRelayRace) {
+        const nextRunnerIndex = prevRunners.findIndex((runner) => runner.id === runnerId) + 1;
+        if (nextRunnerIndex < updatedRunners.length) {
+          const nextRunner = updatedRunners[nextRunnerIndex];
+          nextRunner.lastSplitTime = time;
+          setRunning(true); // Start the next runner's timer
+        }
+      }
+
+      // const allRunnersStopped = updatedRunners.every((element) => element.stopped);
+
+      // if (allRunnersStopped) {
+      //   setRunning(false);
+      // }
+
+      return updatedRunners;
+    });
   };
 
   const deleteRunner = (runnerId) => {
@@ -83,7 +102,6 @@ const Stopwatch = () => {
     setRaceName("");
   };
 
-  // Function to generate and download the results as a text file
   const downloadResults = () => {
     if (runners.length === 0) return;
 
@@ -112,7 +130,6 @@ const Stopwatch = () => {
 
   return (
     <Box sx={{ textAlign: "center", mt: 1, px: isMobile ? 1 : 2 }}>
-      {/* Race Name Input */}
       <Box sx={{ mt: 2, display: "flex", flexDirection: isMobile ? "column" : "row", gap: 2, alignItems: "center" }}>
         <TextField
           label="Race Name"
@@ -124,7 +141,13 @@ const Stopwatch = () => {
         />
       </Box>
 
-      {/* Add Runner */}
+      <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
+        <FormControlLabel
+          control={<Checkbox checked={isRelayRace} onChange={(e) => setIsRelayRace(e.target.checked)} />}
+          label="Relay Race?"
+        />
+      </Box>
+
       <Box sx={{ mt: 2, display: "flex", flexDirection: "row", gap: 2, alignItems: "center" }}>
         <TextField
           label="Runner Name"
@@ -145,12 +168,10 @@ const Stopwatch = () => {
         </Button>
       </Box>
 
-      {/* Timer Display */}
       <Box sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap" }}>
         <Typography variant={isMobile ? "h3" : "h2"}>{formatTime(time)}</Typography>
       </Box>
 
-      {/* Controls */}
       <Box sx={{ mt: 1, display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap" }}>
         <Button
           variant="contained"
@@ -183,40 +204,14 @@ const Stopwatch = () => {
         )}
       </Box>
 
-      {/* Download Results */}
       <Box sx={{ mt: 2 }}>
         <Button variant="outlined" color="primary" onClick={downloadResults}>
           Download Results
         </Button>
       </Box>
 
-      {/* Single Runner Splits */}
-      {runners.length === 0 && singleRunnerSplits.length > 0 && (
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="h6">Laps</Typography>
-          <List>
-            {singleRunnerSplits.map((split, index) => (
-              <ListItem key={index}>
-                <Typography variant="body1">
-                  Lap {index + 1}: {formatTime(split)}
-                </Typography>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      )}
-
-      {/* Runners & Splits */}
-      <Box 
-        sx={{ mt: 2 }}
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "center",
-      }}  
-      >
-        {runners.map((runner) => (
+      <Box sx={{ mt: 2 }} style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "center" }}>
+        {runners.map((runner, index) => (
           <Paper key={runner.id} sx={{ p: 1, borderRadius: 2, width: "155px", height: "auto", mx: "auto" }} style={{ margin: "5px" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <Typography variant="body1">{runner.name}</Typography>
@@ -230,7 +225,7 @@ const Stopwatch = () => {
                 color="secondary"
                 size="small"
                 onClick={() => addSplit(runner.id)}
-                disabled={!running || runner.stopped}
+                disabled={!running || runner.stopped || (isRelayRace && index > 0 && !runners[index - 1].stopped)}
                 sx={{ flex: 1, mr: 1 }}
               >
                 Split
@@ -240,7 +235,7 @@ const Stopwatch = () => {
                 color="warning"
                 size="small"
                 onClick={() => stopRunnerTimer(runner.id)}
-                disabled={runner.stopped}
+                disabled={!running || runner.stopped || (isRelayRace && index > 0 && !runners[index - 1].stopped)}
                 sx={{ flex: 1 }}
               >
                 Stop
@@ -248,12 +243,7 @@ const Stopwatch = () => {
             </Box>
             <List sx={{ mt: 1 }}>
               {runner.splits.map((split, index) => (
-                <ListItem 
-                  style={{
-                    padding: "5px 12px"
-                  }}
-                  key={index}
-                >
+                <ListItem key={index}>
                   <Typography variant="body1">
                     Lap {index + 1}: {formatTime(split)}
                   </Typography>
