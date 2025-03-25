@@ -60,7 +60,7 @@ const Stopwatch = () => {
     setRunners((prevRunners) => {
       const updatedRunners = prevRunners.map((runner) =>
         runner.id === runnerId && !runner.stopped
-          ? { ...runner, stopped: true, totalTime: runner.splits.reduce((acc, val) => acc + val, 0)}
+          ? { ...runner, stopped: true, totalTime: time}
           : runner
       );
 
