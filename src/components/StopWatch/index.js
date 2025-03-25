@@ -4,6 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 const Stopwatch = () => {
   const [time, setTime] = useState(0);
+  const [timerStopped, setTimerStopped] = useState(true);
   const [running, setRunning] = useState(false);
   const [runners, setRunners] = useState([]);
   const [newRunnerName, setNewRunnerName] = useState("");
@@ -59,9 +60,15 @@ const Stopwatch = () => {
     setRunners((prevRunners) => {
       const updatedRunners = prevRunners.map((runner) =>
         runner.id === runnerId && !runner.stopped
-          ? { ...runner, stopped: true, totalTime: time }
+          ? { ...runner, stopped: true, totalTime: runner.splits.reduce((acc, val) => acc + val, 0)}
           : runner
       );
+
+      const allRunnersStopped = updatedRunners.every((element) => element.stopped);
+
+      if (allRunnersStopped) {
+        setRunning(false);
+      }
 
       // Automatically start next runner's time if it's a relay race
       if (isRelayRace) {
@@ -72,12 +79,6 @@ const Stopwatch = () => {
           setRunning(true); // Start the next runner's timer
         }
       }
-
-      // const allRunnersStopped = updatedRunners.every((element) => element.stopped);
-
-      // if (allRunnersStopped) {
-      //   setRunning(false);
-      // }
 
       return updatedRunners;
     });
@@ -258,6 +259,23 @@ const Stopwatch = () => {
           </Paper>
         ))}
       </Box>
+
+        {runners <= 1 && (
+          <Box sx={{ mt: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: 2, flexWrap: "wrap", flexDirection: "column" }}>
+            <List sx={{ mt: 1, textAlign: "center"}}>
+                {singleRunnerSplits.map((split, index) => (
+                  <ListItem key={index}>
+                    <Typography variant="body1">
+                      Lap {index + 1}: {formatTime(split)}
+                    </Typography>
+                  </ListItem>
+                ))}
+            </List>
+            <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                Total Time: {formatTime(time)}
+            </Typography>
+          </Box>
+        )}
     </Box>
   );
 };
