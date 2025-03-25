@@ -4,11 +4,23 @@ import raceDistances from "../../trackevents.json";
 
 const CalculatorApp = () => {
     const [raceDistance, setRaceDistance] = useState('');
+    const [customDistance, setCustomDistance] = useState('');
     const [minutes, setMinutes] = useState('');
     const [seconds, setSeconds] = useState('');
     const [unit, setUnit] = useState('meters');
     const [splitDistances, setSplitDistances] = useState('');
     const [splits, setSplits] = useState([]);
+
+    const handleDistanceChange = (event) => {
+      setRaceDistance(event.target.value);
+      if (event.target.value !== "custom") {
+        setCustomDistance("");
+      }
+    };
+  
+    const handleCustomDistanceChange = (event) => {
+      setCustomDistance(event.target.value);
+    };
 
     // Convert meters to miles
     const convertToMiles = (meters) => meters * 0.000621371;
@@ -23,6 +35,7 @@ const CalculatorApp = () => {
     // Reset form
     const resetForm = () => {
         setRaceDistance('');
+        setCustomDistance('');
         setMinutes('');
         setSeconds('');
         setUnit('meters');
@@ -32,11 +45,17 @@ const CalculatorApp = () => {
 
     // Calculate splits
     const calculateSplits = () => {
+        let selectedRaceDistance = raceDistance;
+
         if (!raceDistance || !minutes || !seconds || !splitDistances) return;
+
+        if (raceDistance === "custom") {
+          selectedRaceDistance = customDistance;
+        }
 
         const totalSeconds = parseFloat(minutes) * 60 + parseFloat(seconds); // Convert to total seconds
 
-        let distanceInMeters = parseFloat(raceDistance);
+        let distanceInMeters = parseFloat(selectedRaceDistance);
         if (unit === 'miles') {
             distanceInMeters = convertToMiles(distanceInMeters);
         }
@@ -59,14 +78,29 @@ const CalculatorApp = () => {
         <InputLabel>Select a Race Distance</InputLabel>
         <Select
           value={raceDistance}
-          onChange={(e) => setRaceDistance(e.target.value)}
+          onChange={handleDistanceChange}
           label="Race Distance"
         >
+            <MenuItem value={"custom"}>Custom Race Distance</MenuItem>
             {raceDistances.map(({ event, distance_meters }) => {
                 return <MenuItem value={distance_meters}>{event}</MenuItem>
             })}
         </Select>
       </FormControl>
+
+      {/* Custom Race Distance */}
+      {raceDistance === "custom" && (
+        <div style={{ display: 'flex', marginBottom: '20px' }}>
+          <TextField
+            fullWidth
+            name="customDistance"
+            label="Custom Distance (meters)"
+            type="number"
+            value={customDistance}
+            onChange={handleCustomDistanceChange}
+          />
+        </div>
+      )}
 
       {/* Time Input */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
