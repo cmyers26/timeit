@@ -7,6 +7,9 @@ const Stopwatch = () => {
   const [running, setRunning] = useState(false);
   const [runners, setRunners] = useState([]);
   const [newRunnerName, setNewRunnerName] = useState("");
+  const [singleRunnerSplits, setSingleRunnerSplits] = useState([]);
+  const [lastSplitTime, setLastSplitTime] = useState(0);
+  const [raceName, setRaceName] = useState("");
 
   const isMobile = useMediaQuery("(max-width:600px)");
 
@@ -65,16 +68,87 @@ const Stopwatch = () => {
     setRunners((prevRunners) => prevRunners.filter((runner) => runner.id !== runnerId));
   };
 
+  const addSingleRunnerLap = () => {
+    const lapTime = time - lastSplitTime;
+    setSingleRunnerSplits([...singleRunnerSplits, lapTime]);
+    setLastSplitTime(time);
+  };
+
   const resetStopwatch = () => {
     setTime(0);
     setRunning(false);
     setRunners([]);
+    setSingleRunnerSplits([]);
+    setLastSplitTime(0);
+    setRaceName("");
+  };
+
+  // Function to generate and download the results as a text file
+  const downloadResults = () => {
+    if (runners.length === 0) return;
+
+    let fileContent = `Race: ${raceName || "Untitled Race"}\n\n`;
+
+    runners.forEach((runner) => {
+      fileContent += `Runner: ${runner.name}\n`;
+      runner.splits.forEach((split, index) => {
+        fileContent += `Lap ${index + 1}: ${formatTime(split)}\n`;
+      });
+      if (runner.totalTime !== undefined) {
+        fileContent += `Total Time: ${formatTime(runner.totalTime)}\n`;
+      }
+      fileContent += `\n`;
+    });
+
+    const blob = new Blob([fileContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `race_results.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   return (
     <Box sx={{ textAlign: "center", mt: 1, px: isMobile ? 1 : 2 }}>
+      {/* Race Name Input */}
+      <Box sx={{ mt: 2, display: "flex", flexDirection: isMobile ? "column" : "row", gap: 2, alignItems: "center" }}>
+        <TextField
+          label="Race Name"
+          variant="outlined"
+          value={raceName}
+          onChange={(e) => setRaceName(e.target.value)}
+          size="small"
+          sx={{ mb: 2, width: "100%" }}
+        />
+      </Box>
+
+      {/* Add Runner */}
+      <Box sx={{ mt: 2, display: "flex", flexDirection: "row", gap: 2, alignItems: "center" }}>
+        <TextField
+          label="Runner Name"
+          variant="outlined"
+          value={newRunnerName}
+          onChange={(e) => setNewRunnerName(e.target.value)}
+          size="small"
+          sx={{ flex: 1 }}
+        />
+        <Button
+          variant="contained"
+          color="success"
+          size="medium"
+          onClick={addRunner}
+          sx={{ minWidth: "120px" }}
+        >
+          Add Runner
+        </Button>
+      </Box>
+
       {/* Timer Display */}
-      <Typography variant={isMobile ? "h4" : "h3"}>{formatTime(time)}</Typography>
+      <Box sx={{ mt: 3, mb: 2, display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap" }}>
+        <Typography variant={isMobile ? "h3" : "h2"}>{formatTime(time)}</Typography>
+      </Box>
 
       {/* Controls */}
       <Box sx={{ mt: 1, display: "flex", justifyContent: "center", gap: 2, flexWrap: "wrap" }}>
@@ -96,38 +170,51 @@ const Stopwatch = () => {
         >
           Reset
         </Button>
+        {runners.length === 0 && running && (
+          <Button
+            variant="contained"
+            color="secondary"
+            size="medium"
+            onClick={addSingleRunnerLap}
+            sx={{ flex: isMobile ? 1 : "unset", minWidth: "120px" }}
+          >
+            Lap
+          </Button>
+        )}
       </Box>
 
-      {/* Add Runner */}
-      <Box sx={{ mt: 2, display: "flex", flexDirection: isMobile ? "column" : "row", gap: 2, alignItems: "center" }}>
-        <TextField
-          label="Runner Name"
-          variant="outlined"
-          value={newRunnerName}
-          onChange={(e) => setNewRunnerName(e.target.value)}
-          size="small"
-          sx={{ flex: 1 }}
-        />
-        <Button
-          variant="contained"
-          color="success"
-          size="medium"
-          onClick={addRunner}
-          sx={{ minWidth: "120px" }}
-        >
-          Add Runner
+      {/* Download Results */}
+      <Box sx={{ mt: 2 }}>
+        <Button variant="outlined" color="primary" onClick={downloadResults}>
+          Download Results
         </Button>
       </Box>
+
+      {/* Single Runner Splits */}
+      {runners.length === 0 && singleRunnerSplits.length > 0 && (
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="h6">Laps</Typography>
+          <List>
+            {singleRunnerSplits.map((split, index) => (
+              <ListItem key={index}>
+                <Typography variant="body1">
+                  Lap {index + 1}: {formatTime(split)}
+                </Typography>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      )}
 
       {/* Runners & Splits */}
       <Box 
         sx={{ mt: 2 }}
         style={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "center",
-        }}
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "center",
+      }}  
       >
         {runners.map((runner) => (
           <Paper key={runner.id} sx={{ p: 1, borderRadius: 2, width: "155px", height: "auto", mx: "auto" }} style={{ margin: "5px" }}>
@@ -159,17 +246,13 @@ const Stopwatch = () => {
                 Stop
               </Button>
             </Box>
-            <List 
-                style={{
-                    marginTop: "10px"
-                }}
-            >
+            <List sx={{ mt: 1 }}>
               {runner.splits.map((split, index) => (
                 <ListItem 
-                    key={index}
-                    style={{
-                        padding: "5px 12px"
-                    }}    
+                  style={{
+                    padding: "5px 12px"
+                  }}
+                  key={index}
                 >
                   <Typography variant="body1">
                     Lap {index + 1}: {formatTime(split)}
@@ -178,13 +261,7 @@ const Stopwatch = () => {
               ))}
             </List>
             {runner.totalTime !== undefined && (
-              <Typography
-                variant="subtitle2"
-                style={{
-                    fontWeight: "bold",
-                    margin: "0"
-                }}
-            >
+              <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
                 Total Time: {formatTime(runner.totalTime)}
               </Typography>
             )}
