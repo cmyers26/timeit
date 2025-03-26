@@ -151,7 +151,7 @@ const Stopwatch = () => {
           control={<Checkbox checked={isRelayRace} onChange={(e) => setIsRelayRace(e.target.checked)} />}
           label="Relay Race?"
         />
-        <Typography variant="body1">If relay, enter runners names in relay order.</Typography>
+        <Typography variant="body2">If relay, enter runners names in relay order.</Typography>
       </Box>
 
       <Box sx={{ mt: 2, display: "flex", flexDirection: "row", gap: 2, alignItems: "center" }}>

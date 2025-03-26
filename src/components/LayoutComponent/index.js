@@ -47,7 +47,7 @@ const Layout = ({ children }) => {
       </AppBar>
 
       {/* Main Content */}
-      <Box component="main" style={{marginBottom: "100px", marginTop: width < 768 ? "80px" : "60px"}}>
+      <Box component="main" style={{marginBottom: "100px", marginTop: width < 768 ? "50px" : "40px"}}>
         <Toolbar />
           {/* <div style={{
             margin: "10px",
