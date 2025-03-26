@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, startTransition } from "react";
 import { Box, Button, Typography, List, ListItem, TextField, Paper, IconButton, useMediaQuery, Checkbox, FormControlLabel } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -36,7 +36,7 @@ const Stopwatch = () => {
 
   const addRunner = () => {
     if (newRunnerName.trim() === "") return;
-    setRunners([...runners, { id: Date.now(), name: newRunnerName, splits: [], lastSplitTime: 0, stopped: false }]);
+    setRunners([...runners, { id: Date.now(), name: newRunnerName, splits: [], startTime: 0, lastSplitTime: 0, stopped: false }]);
     setNewRunnerName("");
   };
 
@@ -58,11 +58,14 @@ const Stopwatch = () => {
 
   const stopRunnerTimer = (runnerId) => {
     setRunners((prevRunners) => {
-      const updatedRunners = prevRunners.map((runner) =>
-        runner.id === runnerId && !runner.stopped
-          ? { ...runner, stopped: true, totalTime: time}
-          : runner
-      );
+      const updatedRunners = prevRunners.map((runner) => {
+        const lastLapTime = time - runner.lastSplitTime;
+        const stoppedTime = runner.startTime === 0 ? lastLapTime + runner.lastSplitTime : time - runner.startTime
+
+        return runner.id === runnerId && !runner.stopped
+          ? { ...runner, splits: [...runner.splits, lastLapTime], stopped: true, totalTime: stoppedTime}
+          : { ...runner, startTime: time}
+      });
 
       const allRunnersStopped = updatedRunners.every((element) => element.stopped);
 
@@ -76,6 +79,7 @@ const Stopwatch = () => {
         if (nextRunnerIndex < updatedRunners.length) {
           const nextRunner = updatedRunners[nextRunnerIndex];
           nextRunner.lastSplitTime = time;
+          nextRunner.startTime = time;
           setRunning(true); // Start the next runner's timer
         }
       }
