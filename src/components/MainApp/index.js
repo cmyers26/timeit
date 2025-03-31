@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { MenuItem, Select, InputLabel, Typography, FormControl } from '@mui/material';
+import { MenuItem, Select, InputLabel, TextField, Box, Button, Typography, FormControl } from '@mui/material';
 import CalculatorApp from '../SplitCalculator';
-import StopWatch from '../StopWatch';
+import StopWatchApp from '../StopWatchApp';
 
 const MainApp = () => {
     const [appSelection, setAppSelection] = useState("stop-watch");
@@ -32,7 +32,7 @@ const MainApp = () => {
                 </Select>
             </FormControl>
             {appSelection === "stop-watch" ? (
-                <StopWatch />
+                <StopWatchApp />
             ) : (
                 <CalculatorApp />
             )}
