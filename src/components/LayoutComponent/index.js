@@ -41,7 +41,7 @@ const Layout = ({ children }) => {
                 }}  
               />
             </span>
-            Free Stopwatch & Split Calculator
+            Free Split Calculator
           </Typography>
         </Toolbar>
       </AppBar>
